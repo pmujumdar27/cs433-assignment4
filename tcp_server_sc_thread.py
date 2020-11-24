@@ -1,6 +1,8 @@
 import socket
 import sys
 import time
+import os
+import threading
 
 PORT = 12345
 SERVER = socket.gethostbyname(socket.gethostname())
@@ -11,6 +13,7 @@ LIBPATH = './serverlib/'
 HEADERSIZE = 64
 DC_MSG = '-BYE'
 FLAGSIZE = 1
+NUM_THREADS = 5
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -67,13 +70,17 @@ def handle_connection(conn, addr):
         filename = msg
         sendfile(filename, conn)
 
+
 def run_server():
     print("Initializing server...")
     server.listen()
     while True:
         print(f"\n\nServer is ready and is listening on {ADDR} ")
         conn, addr = server.accept()
-        handle_connection(conn, addr)
+        thread = threading.Thread(target = handle_connection, args=(conn, addr))
+        thread.start()
+        # handle_connection(conn, addr)
         print(f"Client {addr} disconnected!")
+        # thread.join()
 
 run_server()

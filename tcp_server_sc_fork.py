@@ -1,6 +1,7 @@
 import socket
 import sys
 import time
+import os
 
 PORT = 12345
 SERVER = socket.gethostbyname(socket.gethostname())
@@ -73,7 +74,9 @@ def run_server():
     while True:
         print(f"\n\nServer is ready and is listening on {ADDR} ")
         conn, addr = server.accept()
-        handle_connection(conn, addr)
+        rc = os.fork()
+        if rc==0:
+            handle_connection(conn, addr)
         print(f"Client {addr} disconnected!")
 
 run_server()
