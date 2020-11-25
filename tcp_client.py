@@ -5,7 +5,8 @@ import time
 import csv
 
 PORT = 12345
-SERVER = socket.gethostbyname(socket.gethostname())
+# SERVER = socket.gethostbyname(socket.gethostname())
+SERVER = "10.0.0.1" #uncomment for mininet
 ADDR = (SERVER, PORT)
 FORMAT = 'utf-8'
 BUFFERSIZE = 1024
@@ -52,11 +53,11 @@ def getfile(conn, filename):
     send_msg(filename, conn)
     filesize = int(conn.recv(HEADERSIZE).decode(FORMAT))
 
-    print(f"Size of requested file {filename} is: {filesize}")
+    # print(f"Size of requested file {filename} is: {filesize}")
     fname = "protocol_tcp_" + str(os.getpid()) + "_"+ filename 
     file = open(LIBPATH+fname, "wb")
     len_recv = 0
-    print(f"Writing to {fname}")
+    # print(f"Writing to {fname}")
     start_time = time.time()
     while len_recv < filesize:
         curr_msg = conn.recv(min(BUFFERSIZE, filesize-len_recv))
@@ -64,8 +65,8 @@ def getfile(conn, filename):
         len_recv += len(curr_msg)
     
     download_time = time.time()-start_time
-    print(f"Time taken for download {download_time} seconds")
-    print(f"Throughput: {filesize/(download_time*1e6)} MB/sec")
+    # print(f"Time taken for download {download_time} seconds")
+    # print(f"Throughput: {filesize/(download_time*1e6)} MB/sec")
     fileThroughputDict[filename] = filesize/(download_time*1e6)
     print("Success!\n")
     file.close()
@@ -134,9 +135,9 @@ def run_client():
     else:
         throughput = get_files_persistent(filerequests)
 
-    indiv_time_log = f'tcp_indiv_time_mode_{mode}.csv'
-    indiv_throughput_log = f'tcp_indiv_throughput_mode_{mode}.csv'
-    agg_log = f'tcp_agg_log_mode_{mode}.csv'
+    indiv_time_log = 'tcp_indiv_time_mode_{}.csv'.format(mode)
+    indiv_throughput_log = 'tcp_indiv_throughput_mode_{}.csv'.format(mode)
+    agg_log = 'tcp_agg_log_mode_{}.csv'.format(mode)
 
     writeHeaderAgain = False
 
@@ -171,6 +172,6 @@ def run_client():
             writer.writeheader()
         writer.writerows([aggThroughputDict])
     
-    print(f"Cumulative throughput in mode {mode} was: {throughput}")
+    print("Cumulative throughput in mode {} was: {}".format(mode, throughput))
 
 run_client()

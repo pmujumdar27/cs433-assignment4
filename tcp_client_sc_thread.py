@@ -5,7 +5,8 @@ import time
 import csv
 
 PORT = 12345
-SERVER = socket.gethostbyname(socket.gethostname())
+# SERVER = socket.gethostbyname(socket.gethostname())
+SERVER = "10.0.0.1" #uncomment to run on mininet with server on h1 (having ip 10.0.0.1)
 ADDR = (SERVER, PORT)
 FORMAT = 'utf-8'
 BUFFERSIZE = 1024
@@ -13,7 +14,8 @@ HEADERSIZE = 64
 WELCOMEPATH = "./supportFiles/clientWelcome.txt"
 DC_MSG = "-BYE"
 LIBPATH = "./clientlib/"
-SINGLEFILE = sys.argv[1]
+SINGLEFILE = sys.argv[1] #uncomment for mininet
+# SINGLEFILE = 2
 
 aggThroughputDict = {}
 aggTPFieldNames = ['one_conn_time', 'agg_throughput']
@@ -53,11 +55,11 @@ def getfile(conn, filename):
     send_msg(filename, conn)
     filesize = int(conn.recv(HEADERSIZE).decode(FORMAT))
 
-    print(f"Size of requested file {filename} is: {filesize}")
+    # print(f"Size of requested file {filename} is: {filesize}")
     fname = "protocol_tcp_" + str(os.getpid()) + "_"+ filename 
     file = open(LIBPATH+fname, "wb")
     len_recv = 0
-    print(f"Writing to {fname}")
+    # print(f"Writing to {fname}")
     start_time = time.time()
     while len_recv < filesize:
         curr_msg = conn.recv(min(BUFFERSIZE, filesize-len_recv))
@@ -65,8 +67,8 @@ def getfile(conn, filename):
         len_recv += len(curr_msg)
     
     download_time = time.time()-start_time
-    print(f"Time taken for download {download_time} seconds")
-    print(f"Throughput: {filesize/(download_time*1e6)} MB/sec")
+    print("Time taken for {} download {} seconds".format(filename, download_time))
+    # print("Throughput: {filesize/(download_time*1e6)} MB/sec")
     fileThroughputDict[filename] = filesize/(download_time*1e6)
     print("Success!\n")
     file.close()
@@ -123,14 +125,18 @@ def run_client():
     welcome_text = client_welcome.read()
     print(welcome_text)
 
-    mode = get_conn_mode()
+    print("singlefilemode:", SINGLEFILE)
+
+    
 
     if SINGLEFILE == '1':
+        mode = 2
         filerequests = [sys.argv[2]]
-    else:    
+    else:
+        mode = get_conn_mode()    
         filerequests = get_file_requests()
 
-    throughput = 0
+    # throughput = 0
 
     if mode==1:
         throughput = get_files_non_persistent(filerequests)
@@ -138,9 +144,19 @@ def run_client():
     else:
         throughput = get_files_persistent(filerequests)
 
-    indiv_time_log = f'tcp_thread__indiv_time_mode_{mode}.csv'
-    indiv_throughput_log = f'tcp_thread_indiv_throughput_mode_{mode}.csv'
-    agg_log = f'tcp_thread_agg_log_mode_{mode}.csv'
+    if SINGLEFILE=="1":
+        indiv_time_log = "out1.csv"
+        indiv_throughput_log = "out2.csv"
+        agg_log = "out3.csv"
+
+    else:
+        indiv_time_log = 'tcp_thread_indiv_time_mode_{}.csv'.format(mode)
+        indiv_throughput_log = 'tcp_thread_indiv_throughput_mode_{}.csv'.format(mode)
+        agg_log = 'tcp_thread_agg_log_mode_{}.csv'.format(mode)
+
+    print(fileDownloadTimeDict)
+    print(aggThroughputDict)
+    print(fileThroughputDict)
 
     writeHeaderAgain = False
 
@@ -148,7 +164,7 @@ def run_client():
         with open (indiv_time_log, "r") as csvfile:
             mycsv = csv.reader(csvfile)
             for row in mycsv:
-                print(row[0])
+                # print(row[0])
                 if(row[0]==""):
                     writeHeaderAgain = True
                     break
@@ -175,6 +191,6 @@ def run_client():
             writer.writeheader()
         writer.writerows([aggThroughputDict])
     
-    print(f"Cumulative throughput in mode {mode} was: {throughput}")
+    # print(f"Cumulative throughput in mode {mode} was: {throughput}")
 
 run_client()

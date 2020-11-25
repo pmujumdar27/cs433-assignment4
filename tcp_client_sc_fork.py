@@ -21,6 +21,8 @@ fieldNames = []
 fileDownloadTimeDict = {}
 fileThroughputs = []
 fileThroughputDict = {}
+SINGLEFILE = sys.argv[1] #uncomment for single file
+# SINGLEFILE = 2
 
 def get_conn_mode():
     mode = int(input())
@@ -124,7 +126,12 @@ def run_client():
 
     mode = get_conn_mode()
 
-    filerequests = get_file_requests()
+    if SINGLEFILE == '1':
+        mode = 2
+        filerequests = [sys.argv[2]]
+    else:
+        mode = get_conn_mode()    
+        filerequests = get_file_requests()
 
     throughput = 0
 
@@ -134,9 +141,19 @@ def run_client():
     else:
         throughput = get_files_persistent(filerequests)
 
-    indiv_time_log = f'tcp_fork__indiv_time_mode_{mode}.csv'
-    indiv_throughput_log = f'tcp_fork_indiv_throughput_mode_{mode}.csv'
-    agg_log = f'tcp_fork_agg_log_mode_{mode}.csv'
+    if SINGLEFILE=="1":
+        print(fileDownloadTimeDict)
+        print(aggThroughputDict)
+        print(fileThroughputDict)
+        return
+    else:
+        indiv_time_log = f'tcp_fork_indiv_time_mode_{mode}.csv'
+        indiv_throughput_log = f'tcp_fork_indiv_throughput_mode_{mode}.csv'
+        agg_log = f'tcp_fork_agg_log_mode_{mode}.csv'
+
+    print(fileDownloadTimeDict)
+    print(aggThroughputDict)
+    print(fileThroughputDict)
 
     writeHeaderAgain = False
 

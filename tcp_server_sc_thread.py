@@ -5,7 +5,8 @@ import os
 import threading
 
 PORT = 12345
-SERVER = socket.gethostbyname(socket.gethostname())
+SERVER = "10.0.0.1" #uncomment for mininet
+# SERVER = socket.gethostbyname(socket.gethostname())
 ADDR = (SERVER, PORT)
 FORMAT = 'utf-8'
 BUFFERSIZE = 1024
@@ -38,7 +39,7 @@ def sendfile(filename, conn):
     file.close()
 
     filesize = len(file_contents)
-    print(f"Size of requested file is: {filesize}")
+    print("Size of requested file is: {}".format(filesize))
     send_filesize = str(filesize).encode(FORMAT)
     send_filesize += b' '*(HEADERSIZE - len(send_filesize))
 
@@ -53,11 +54,11 @@ def sendfile(filename, conn):
         conn.send(curr_msg)
         len_sent += len(curr_msg)
 
-    print(f"File {filename} sent successfully!")
+    # print(f"File {filename} sent successfully!")
     return "Success!", 1
 
 def handle_connection(conn, addr):
-    print(f"\n[+] Client Connected: {addr}")
+    print("\n[+] Client Connected: {}".format(addr))
 
     while True:
         msg = ''
@@ -70,17 +71,19 @@ def handle_connection(conn, addr):
         filename = msg
         sendfile(filename, conn)
 
+threads = []
 
 def run_server():
     print("Initializing server...")
-    server.listen()
+    server.listen(10)
     while True:
-        print(f"\n\nServer is ready and is listening on {ADDR} ")
+        print("\n\nServer is ready and is listening on {} ".format(ADDR))
         conn, addr = server.accept()
         thread = threading.Thread(target = handle_connection, args=(conn, addr))
+        threads.append(thread)
         thread.start()
-        # handle_connection(conn, addr)
-        print(f"Client {addr} disconnected!")
-        # thread.join()
+
+    # for t in threads:
+    #     t.join()
 
 run_server()
