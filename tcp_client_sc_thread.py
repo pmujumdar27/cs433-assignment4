@@ -14,8 +14,8 @@ HEADERSIZE = 64
 WELCOMEPATH = "./supportFiles/clientWelcome.txt"
 DC_MSG = "-BYE"
 LIBPATH = "./clientlib/"
-SINGLEFILE = sys.argv[1] #uncomment for mininet
-# SINGLEFILE = 2
+# SINGLEFILE = sys.argv[1] #uncomment for mininet
+SINGLEFILE = 2
 
 aggThroughputDict = {}
 aggTPFieldNames = ['one_conn_time', 'agg_throughput']

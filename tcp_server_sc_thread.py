@@ -5,8 +5,8 @@ import os
 import threading
 
 PORT = 12345
-SERVER = "10.0.0.1" #uncomment for mininet
-# SERVER = socket.gethostbyname(socket.gethostname())
+# SERVER = "10.0.0.1" #uncomment for mininet
+SERVER = socket.gethostbyname(socket.gethostname())
 ADDR = (SERVER, PORT)
 FORMAT = 'utf-8'
 BUFFERSIZE = 1024

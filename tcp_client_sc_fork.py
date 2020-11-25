@@ -21,8 +21,8 @@ fieldNames = []
 fileDownloadTimeDict = {}
 fileThroughputs = []
 fileThroughputDict = {}
-SINGLEFILE = sys.argv[1] #uncomment for single file
-# SINGLEFILE = 2
+# SINGLEFILE = sys.argv[1] #uncomment for single file
+SINGLEFILE = 2
 
 def get_conn_mode():
     mode = int(input())
